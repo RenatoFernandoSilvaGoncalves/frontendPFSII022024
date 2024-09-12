@@ -1,6 +1,6 @@
-const urlBase = "http://localhost:4000/categoria";
+const urlBase = "http://localhost:4000/produto";
 
-export async function gravar(categoria, token) {
+export async function gravar(produto, token) {
     const resposta = await fetch(urlBase,
         {
             method: "POST",
@@ -9,12 +9,12 @@ export async function gravar(categoria, token) {
                         "Authorization": token
                      },
             credentials: 'include',
-            body: JSON.stringify(categoria)
+            body: JSON.stringify(produto)
         });
     return await resposta.json();
 }
 
-export async function alterar(categoria, token) {
+export async function alterar(produto, token) {
     const resposta = await fetch(urlBase,
         {
             method: "PUT",
@@ -23,12 +23,12 @@ export async function alterar(categoria, token) {
                 "Authorization": token
              },
             credentials: 'include',
-            body: JSON.stringify(categoria)
+            body: JSON.stringify(produto)
         });
     return await resposta.json();
 }
 
-export async function excluir(categoria, token) {
+export async function excluir(produto, token) {
     const resposta = await fetch(urlBase,
         {
             method: "DELETE",
@@ -37,7 +37,7 @@ export async function excluir(categoria, token) {
                 "Authorization": token
              },
             credentials: 'include',
-            body: JSON.stringify(categoria)
+            body: JSON.stringify(produto)
         });
     return await resposta.json();
 }

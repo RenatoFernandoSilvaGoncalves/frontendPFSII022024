@@ -10,7 +10,8 @@ export default function CaixaSelecao({ enderecoFonteDados,
     campoChave,
     campoExibicao,
     funcaoSelecao,
-    localLista }) {
+    localLista,
+    tokenAcesso }) {
     const [valorSelecionado, setValorSelecionado] = useState({
         [campoChave]: 0,
         [campoExibicao]:"Não foi possível obter os dados do backend"
@@ -21,7 +22,21 @@ export default function CaixaSelecao({ enderecoFonteDados,
     useEffect(() => {
         try {
             setCarregandoDados(true);
-            fetch(enderecoFonteDados, { method: "GET" }).then((resposta) => {
+            let config;
+            if (tokenAcesso){
+                config = {
+                    method: "GET",
+                    headers: {
+                        "Authorization": tokenAcesso
+                    },
+                    credentials: 'include'
+                }
+            }
+            else
+            {
+                config = { method: "GET", credentials: 'include' };
+            }
+            fetch(enderecoFonteDados, config).then((resposta) => {
                 if (resposta.ok) {  //código 200
                     return resposta.json();
                 }
