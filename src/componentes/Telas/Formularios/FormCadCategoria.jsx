@@ -16,12 +16,12 @@ export default function FormCadCategorias(props) {
     }
 
     function manipularSubmissao(evento) {
-        const token = ContextoUsuarioLogado.usuarioLogado.token;
-        const formulario = evento.currentTarget();
+        const token = contextoUsuario.usuarioLogado.token;
+        const formulario = evento.currentTarget;
         if (formulario.checkValidity()) {
             if (!props.modoEdicao) {
                 gravar(categoria,token).then((resposta) => {
-                    alert("Gravado com sucesso!");
+                    alert(resposta.mensagem);
                     props.setExibirTabela(true);
                 }).catch((erro) => {
                     alert(erro.message);
@@ -30,6 +30,9 @@ export default function FormCadCategorias(props) {
             else {
                 alterar(categoria, token).then((resposta) => {
                     alert("Atualizado com sucesso!");
+                    props.setModoEdicao(false);
+                    props.setCategoriaSelecionada( { codigo: 0, descricao: "" });
+
                     setValidado(false);
                 }).catch((erro) => {
                     alert(erro.message);

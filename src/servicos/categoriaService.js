@@ -8,6 +8,7 @@ export async function gravar(categoria, token) {
                         "Content-Type": "application/json",
                         "Authorization": token
                      },
+            credentials: 'include',
             body: JSON.stringify(categoria)
         });
     return await resposta.json();
@@ -21,6 +22,7 @@ export async function alterar(categoria, token) {
                 "Content-Type": "application/json",
                 "Authorization": token
              },
+            credentials: 'include',
             body: JSON.stringify(categoria)
         });
     return await resposta.json();
@@ -34,6 +36,7 @@ export async function excluir(categoria, token) {
                 "Content-Type": "application/json",
                 "Authorization": token
              },
+            credentials: 'include',
             body: JSON.stringify(categoria)
         });
     return await resposta.json();
@@ -47,6 +50,7 @@ export async function consultarTodos(token) {
                 "Access-Control-Allow-Origin":"http://localhost:3000",
                 "Authorization": token
              },
+             credentials: 'include'
         });
     return await resposta.json();
 }

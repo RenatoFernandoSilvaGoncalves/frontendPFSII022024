@@ -41,7 +41,8 @@ export default function TelaCadastroCategoria(props) {
                         <FormCadCategorias setExibirTabela={setExibirTabela}
                                            categoriaSelecionada={categoriaSelecionada}
                                            setCategoriaSelecionada={setCategoriaSelecionada}
-                                           setModoEdicao={setModoEdicao} />
+                                           setModoEdicao={setModoEdicao} 
+                                           modoEdicao={modoEdicao}/>
                 }
             </Pagina>
         </div>
