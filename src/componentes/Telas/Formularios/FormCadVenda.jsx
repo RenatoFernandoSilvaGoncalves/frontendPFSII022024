@@ -187,7 +187,10 @@ export default function FormCadVenda(props) {
                     </Row>
                 </Container>
             </Row>
-            <Button type="submit">Confirmar a Venda</Button>
+            <Button type="submit">Confirmar a Venda</Button> <Button variant="secondary" 
+                                                                     onClick={
+                                                                        () => props.setExibirTabela(true)
+                                                                    }>Cancelar</Button>
         </Form>
     );
 }
