@@ -5,6 +5,7 @@ import Tela404 from "./componentes/Telas/Tela404";
 import TelaLogin from "./componentes/Telas/TelaLogin";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { useState, createContext } from "react";
+import TelaVenda from "./componentes/Telas/TelaVenda";
 
 export const ContextoUsuarioLogado = createContext(null);
 
@@ -27,6 +28,7 @@ function App() {
           <Routes>
             <Route path="/produto" element={<TelaCadastroProduto />} />
             <Route path="/categoria" element={<TelaCadastroCategoria />} />
+            <Route path="/pedido" element={<TelaVenda />} />
             <Route path="/" element={<TelaMenu />} />
             <Route path="*" element={<Tela404 />} />
           </Routes>
