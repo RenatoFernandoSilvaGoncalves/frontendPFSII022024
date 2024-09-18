@@ -4,69 +4,77 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import CaixaSelecao from '../../busca/CaixaSelecao';
+import { useState, useContext } from 'react';
 import { ContextoUsuarioLogado } from '../../../App';
-import { useContext, useState } from 'react';
-import { gravar, alterar } from '../../../servicos/produtoService';
+import { alterar, gravar } from '../../../servicos/produtoService';
 
 export default function FormCadProdutos(props) {
-    const [produto, setProduto] = useState(props.produtoSelecionado)
+
     const contextoUsuario = useContext(ContextoUsuarioLogado);
     const [categoriaSelecionada, setCategoriaSelecionada] = useState(props.produtoSelecionado.categoria);
-
+    const [produto, setProduto] = useState(props.produtoSelecionado);
     const [validado, setValidado] = useState(false);
+
+    function manipularMudanca(evento){
+        setProduto({
+            ...produto,
+            [evento.target.name]: evento.target.value
+        });
+    }
+
     function manipularSubmissao(evento){
-        const form = evento.currentTarget;
-        if (form.checkValidity()) {
-            produto.categoria = categoriaSelecionada;
+        const token = contextoUsuario.usuarioLogado.token;
+        const formulario = evento.currentTarget;
+        if(formulario.checkValidity()){
+            const dados = { ...produto, categoria: categoriaSelecionada };
             if(!props.modoEdicao){
-                gravar(produto, contextoUsuario.usuarioLogado.token).then((resposta) => {
+                gravar(dados, token).then((resposta) => {
+                    alert(resposta.mensagem);
                     if (resposta.status) {
-                        alert(resposta.mensagem);
-                        props.setExibirTabela(true);
-                    }
-                    else{
-                        alert(resposta.mensagem);
-                    }
-                }).catch((erro) =>{
-                    alert("Erro ao enviar a requisicao: " + erro.message);
-                })
-            }
-            else{
-                alterar(produto, contextoUsuario.usuarioLogado.token).then((resposta)=>{
-                    if (resposta.status){
-                        alert(resposta.mensagem);
-                        props.setModoEdicao(false);
-                        setProduto({
-                            codigo: 0,
-                            descricao: "",
-                            precoCusto: 0,
-                            precoVenda: 0,
-                            qtdEstoque: 0,
-                            dataValidade: "",
-                            categoria: {
-                                codigo: 0,
-                                descricao: ""
-                            }
-                        })
-                    }
-                    else{
-                        alert(resposta.mensagem)
+                        props.setExibirTabela(true);    
                     }
                 }).catch((erro) => {
                     alert("Erro ao enviar a requisição: " + erro.message);
-                })
+                });
+                
             }
+            else{
+                alterar(dados, token).then((resposta) => {
+                    alert(resposta.mensagem);
+                    props.setModoEdicao(false);
+                    setProduto({
+                        codigo: 0,
+                        descricao: "",
+                        precoCusto: 0,
+                        precoVenda: 0,
+                        categoria: {
+                            codigo: 0,
+                            descricao: ""
+                        },
+                        qtdEstoque: 0,
+                        dataValidade: ""
+                    })
+                    props.setProdutoSelecionado({ codigo: 0,
+                        descricao: "",
+                        precoCusto: 0,
+                        precoVenda: 0,
+                        categoria: {
+                            codigo: 0,
+                            descricao: ""
+                        },
+                        qtdEstoque: 0,
+                        dataValidade: ""});
+                }).catch((erro) => {
+                    alert("Erro ao enviar a requisição: " + erro.message);
+                });
+            }
+            setValidado(false);
         }
         else{
             setValidado(true);
         }
-
-        evento.preventDefault();
         evento.stopPropagation();
-    }
-
-    function manipularMudanca(evento) {
-        setProduto({ ...produto, [evento.target.name]: evento.target.value });
+        evento.preventDefault();    
     }
 
     return (
@@ -80,6 +88,7 @@ export default function FormCadProdutos(props) {
                         id="codigo"
                         name="codigo"
                         value={produto.codigo}
+                        onChange={manipularMudanca}
                         disabled
                     />
                     <Form.Control.Feedback type='invalid'>Por favor, informe o código do produto!</Form.Control.Feedback>
@@ -109,9 +118,9 @@ export default function FormCadProdutos(props) {
                             id="precoCusto"
                             name="precoCusto"
                             aria-describedby="precoCusto"
-                            required
                             onChange={manipularMudanca}
                             value={produto.precoCusto}
+                            required
                         />
                         <Form.Control.Feedback type="invalid">
                             Por favor, informe o preço de custo!
@@ -127,9 +136,9 @@ export default function FormCadProdutos(props) {
                             id="precoVenda"
                             name="precoVenda"
                             aria-describedby="precoVenda"
-                            required
                             onChange={manipularMudanca}
                             value={produto.precoVenda}
+                            required
                         />
                         <Form.Control.Feedback type="invalid">
                             Por favor, informe o preço de venda!
@@ -145,9 +154,9 @@ export default function FormCadProdutos(props) {
                             id="qtdEstoque"
                             name="qtdEstoque"
                             aria-describedby="qtdEstoque"
-                            required
                             onChange={manipularMudanca}
                             value={produto.qtdEstoque}
+                            required
                         />
                         <Form.Control.Feedback type="invalid">
                             Por favor, informe a quantidade em estoque!
@@ -156,7 +165,7 @@ export default function FormCadProdutos(props) {
                 </Form.Group>
             </Row>
             <Row className="mb-4">
-                <Form.Group as={Col} md="4" >
+                <Form.Group as={Col} md="4" controlId="dataValidade">
                     <Form.Label>Válido até:</Form.Label>
                     <Form.Control
                         required
@@ -168,19 +177,19 @@ export default function FormCadProdutos(props) {
                     />
                     <Form.Control.Feedback type="invalid">Por favor, informe a data de validade do produto!</Form.Control.Feedback>
                 </Form.Group>
-                <Form.Group as={Col} md="8">
+                <Col md={8}>
                     <Form.Label>Categoria:</Form.Label>
-                    <CaixaSelecao enderecoFonteDados={"http://localhost:4000/categoria"}
-                                  campoChave="codigo"
-                                  campoExibicao="descricao"
+                    <CaixaSelecao enderecoFonteDados={"http://localhost:4000/categoria"} 
+                                  campoChave={"codigo"}
+                                  campoExibicao={"descricao"}
                                   funcaoSelecao={setCategoriaSelecionada}
                                   localLista={"listaCategorias"}
-                                  token={contextoUsuario.usuarioLogado.token}/>
-                </Form.Group>
+                                  tokenAcesso={contextoUsuario.usuarioLogado.token}/>
+                </Col>
             </Row>
             <Row className='mt-2 mb-2'>
                 <Col md={1}>
-                    <Button type='submit'>{props.modoEdicao ? "Atualizar" : "Cadastrar"}</Button>
+                    <Button type="submit">{props.modoEdicao ? 'Alterar' : 'Cadastrar'}</Button>
                 </Col>
                 <Col md={{offset:1}}>
                     <Button onClick={()=>{

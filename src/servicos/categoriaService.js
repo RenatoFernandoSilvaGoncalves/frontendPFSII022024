@@ -47,7 +47,6 @@ export async function consultarTodos(token) {
         {
             method: "GET",
             headers: { 
-                "Access-Control-Allow-Origin":"http://localhost:3000",
                 "Authorization": token
              },
              credentials: 'include'

@@ -6,33 +6,34 @@ import TabelaProdutos from "./Tabelas/TabelaProdutos";
 import { consultarTodos } from "../../servicos/produtoService";
 import { ContextoUsuarioLogado } from "../../App";
 
-
 export default function TelaCadastroProduto(props) {
-    const [modoEdicao, setModoEdicao] = useState(false);
+    const contextoUsuario = useContext(ContextoUsuarioLogado);
     const [exibirTabela, setExibirTabela] = useState(true);
-    const [listaDeProdutos, setListaDeProdutos] = useState([]);
+    const [modoEdicao, setModoEdicao] = useState(false);
     const [atualizarTela, setAtualizarTela] = useState(false);
     const [produtoSelecionado, setProdutoSelecionado] = useState({
         codigo: 0,
         descricao: "",
         precoCusto: 0,
         precoVenda: 0,
-        qtdEstoque: 0,
-        dataValidade: "",
         categoria: {
             codigo: 0,
             descricao: ""
-        }
+        },
+        urlImagem: "",
+        qtdEstoque: 0,
+        dataValidade: "",
     });
-    const contextoUsuario = useContext(ContextoUsuarioLogado);
+    const [listaDeProdutos, setListaDeProdutos] = useState([]);
+
     useEffect(() => {
         const token = contextoUsuario.usuarioLogado.token;
         consultarTodos(token).then((resposta) => {
-            if (resposta.status) {
-                setListaDeProdutos(resposta.listaProdutos);
-            }
-        })
-    }, [exibirTabela, atualizarTela]); //willMount //willUpdate
+            setListaDeProdutos(resposta.listaProdutos);
+        }).catch((erro) => {
+            alert("Erro ao enviar a requisição: " + erro.message);
+        });
+    }, [atualizarTela, exibirTabela]);
    
     return (
         <div>
@@ -44,20 +45,17 @@ export default function TelaCadastroProduto(props) {
                 </Alert>
                 {
                     exibirTabela ?
-                        <TabelaProdutos 
-                            listaDeProdutos={listaDeProdutos} 
-                            setExibirTabela={setExibirTabela} 
-                            setProdutoSelecionado={setProdutoSelecionado}
-                            produtoSelecionado={produtoSelecionado}
-                            setModoEdicao={setModoEdicao}
-                            setAtualizarTela={setAtualizarTela}
-                            /> :
-                        <FormCadProdutos 
-                            setProdutoSelecionado={setProdutoSelecionado}
-                            produtoSelecionado={produtoSelecionado}
-                            setExibirTabela={setExibirTabela}
-                            modoEdicao={modoEdicao}
-                            setModoEdicao={setModoEdicao} />
+                        <TabelaProdutos listaDeProdutos={listaDeProdutos} 
+                                        setExibirTabela={setExibirTabela}
+                                        setModoEdicao={setModoEdicao}
+                                        setProdutoSelecionado={setProdutoSelecionado} 
+                                        setAtualizarTela={setAtualizarTela}/> :
+                        <FormCadProdutos setExibirTabela={setExibirTabela}
+                                         setModoEdicao={setModoEdicao}
+                                         modoEdicao={modoEdicao}
+                                         setProdutoSelecionado={setProdutoSelecionado}
+                                         produtoSelecionado={produtoSelecionado}
+                                         setAtualizarTela={setAtualizarTela} />
                 }
             </Pagina>
         </div>
