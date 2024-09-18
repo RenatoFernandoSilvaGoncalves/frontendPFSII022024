@@ -17,6 +17,9 @@ export default function TabelaCategorias(props) {
                 if (resposta.status){
                     alert(resposta.mensagem);
                 }
+                else{
+                    alert(resposta.mensagem);
+                }
             }).catch((erro) => {
                 alert("Erro ao enviar a requisição:" + erro.message);}
             );

@@ -6,22 +6,41 @@ import { Container, Col, Form, Row, Spinner } from "react-bootstrap";
 //campoChave: Nos dados, qual campo é a chave primária
 //campoExibicao: Qual coluna deve ser exibida pela caixa de seleção
 //funcaoSelecao : Que é a função que receberá o objeto selecionado pelo usuário
+
+
 export default function CaixaSelecao({ enderecoFonteDados,
     campoChave,
-    campoExibicao,
+    campoExibicao, 
     funcaoSelecao,
-    localLista }) {
+    localLista,
+    token }) {
     const [valorSelecionado, setValorSelecionado] = useState({
         [campoChave]: 0,
         [campoExibicao]:"Não foi possível obter os dados do backend"
     });
+
+    
     const [carregandoDados, setCarregandoDados] = useState(false);
     const [dados, setDados] = useState([]);
 
     useEffect(() => {
         try {
+
+            let parametros;
+            if (token){
+                parametros = { 
+                                method: "GET",
+                                headers: {
+                                    Authorization:token
+                                },
+                                credentials:"include"
+                             }
+            }
+            else{
+                parametros = { method: "GET" };
+            }
             setCarregandoDados(true);
-            fetch(enderecoFonteDados, { method: "GET" }).then((resposta) => {
+            fetch(enderecoFonteDados, parametros).then((resposta) => {
                 if (resposta.ok) {  //código 200
                     return resposta.json();
                 }

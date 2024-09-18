@@ -1,13 +1,38 @@
 import { Alert } from "react-bootstrap";
 import FormCadProdutos from "./Formularios/FormCadProduto";
 import Pagina from "../Templates/Pagina";
-import { useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import TabelaProdutos from "./Tabelas/TabelaProdutos";
+import { consultarTodos } from "../../servicos/produtoService";
+import { ContextoUsuarioLogado } from "../../App";
 
 
 export default function TelaCadastroProduto(props) {
+    const [modoEdicao, setModoEdicao] = useState(false);
     const [exibirTabela, setExibirTabela] = useState(true);
-
+    const [listaDeProdutos, setListaDeProdutos] = useState([]);
+    const [atualizarTela, setAtualizarTela] = useState(false);
+    const [produtoSelecionado, setProdutoSelecionado] = useState({
+        codigo: 0,
+        descricao: "",
+        precoCusto: 0,
+        precoVenda: 0,
+        qtdEstoque: 0,
+        dataValidade: "",
+        categoria: {
+            codigo: 0,
+            descricao: ""
+        }
+    });
+    const contextoUsuario = useContext(ContextoUsuarioLogado);
+    useEffect(() => {
+        const token = contextoUsuario.usuarioLogado.token;
+        consultarTodos(token).then((resposta) => {
+            if (resposta.status) {
+                setListaDeProdutos(resposta.listaProdutos);
+            }
+        })
+    }, [exibirTabela, atualizarTela]); //willMount //willUpdate
    
     return (
         <div>
@@ -19,8 +44,20 @@ export default function TelaCadastroProduto(props) {
                 </Alert>
                 {
                     exibirTabela ?
-                        <TabelaProdutos listaDeProdutos={[]} setExibirTabela={setExibirTabela} /> :
-                        <FormCadProdutos setExibirTabela={setExibirTabela} />
+                        <TabelaProdutos 
+                            listaDeProdutos={listaDeProdutos} 
+                            setExibirTabela={setExibirTabela} 
+                            setProdutoSelecionado={setProdutoSelecionado}
+                            produtoSelecionado={produtoSelecionado}
+                            setModoEdicao={setModoEdicao}
+                            setAtualizarTela={setAtualizarTela}
+                            /> :
+                        <FormCadProdutos 
+                            setProdutoSelecionado={setProdutoSelecionado}
+                            produtoSelecionado={produtoSelecionado}
+                            setExibirTabela={setExibirTabela}
+                            modoEdicao={modoEdicao}
+                            setModoEdicao={setModoEdicao} />
                 }
             </Pagina>
         </div>
